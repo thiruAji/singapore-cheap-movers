@@ -1,0 +1,13 @@
+{
+  "name": "singapore-cheap-movers",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Singapore Cheap Movers website with AI moving assistant",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
