@@ -146,6 +146,48 @@
         openChat();
     });
 
+    /* ---------- Client-side fallback (for GitHub Pages / static hosting without backend) ---------- */
+    function localOfflineReply(text) {
+        const t = (text || '').toLowerCase();
+        const has = (...w) => w.some(x => t.includes(x));
+
+        if (/^(hi|hello|hey|good (morning|afternoon|evening))\b/.test(t.trim()) && t.length < 25)
+            return "Hi! I'm Mei, your moving assistant. Tell me your **home size** and where you're moving **from and to**, and I'll estimate your price.";
+        if (has('mcst', 'permit'))
+            return "Yes. After you book, we send our vehicle numbers, crew details and insurance certificate for your condo's MCST move-in/out form.";
+        if (has('insur', 'damage', 'scratch'))
+            return "Every move includes goods-in-transit insurance. Check items when we unload and tell the crew leader about any issue before they leave.";
+        if (has('dismantl', 'assembl', 'wardrobe', 'carpent'))
+            return "Dismantling is charged per item so you only pay for what you need:\n- Standard bed: $30–$50\n- Storage / bunk bed: $60–$80\n- Dining table: $30–$50\n- Wardrobe: $80–$150";
+        if (has('4 room', '4-room', '5 room', '5-room', '4rm', '5rm', 'executive', '3 bed', '3-bed'))
+            return "For a **4–5 room HDB or 3-bed condo**, most families use our **24ft jumbo lorry with 4 movers: from $480**.\n\nCommon add-ons:\n- Bed dismantle: $30–$50 each\n- Wardrobe dismantle: $80–$150 each\n- 20 boxes: $45\n\nWhere are you moving from and to?\n[[WHATSAPP]]";
+        if (has('2 room', '2-room', '3 room', '3-room', '1 bed', '2 bed', 'condo'))
+            return "For a **2–3 room HDB or 1–2 bed condo**, our **14ft tailgate lorry with 3 movers is from $280**. That includes wrapping and lift-landing moving.\n\nDo you need any beds or wardrobes dismantled?\n[[WHATSAPP]]";
+        if (has('room', 'studio', 'small', 'few items', 'single'))
+            return "For a room or studio, our **10ft lorry with 2 movers is from $180** per trip. Roughly 15 boxes plus a bed and desk fit in.\n\nWhen are you planning to move?";
+        if (has('landed', 'terrace', 'semi-d', 'bungalow'))
+            return "Landed moves start **from $780** with 2–3 lorries, 6 movers and a site supervisor, including floor and staircase protection.\n\nShall I connect you to our coordinator to confirm?\n[[WHATSAPP]]";
+        if (has('office', 'shop', 'commercial'))
+            return "Office and shop relocations start **from $380**. We can move after hours or on weekends to avoid downtime.\n\nHow many workstations do you have?\n[[WHATSAPP]]";
+        if (has('bed', 'table'))
+            return "Dismantling is charged per item so you only pay for what you need:\n- Standard bed: $30–$50\n- Storage / bunk bed: $60–$80\n- Dining table: $30–$50\n- Wardrobe: $80–$150";
+        if (has('box', 'carton'))
+            return "A bundle of **20 heavy-duty boxes + tape is $45**. We can deliver them before moving day.";
+        if (has('stair', 'no lift', 'walk up'))
+            return "If there's no lift landing, stairs are **$30 per floor per load**.";
+        if (has('piano', 'safe'))
+            return "Upright pianos and safes start **from $150**, depending on access.";
+        if (has('dispos', 'throw', 'old sofa', 'mattress'))
+            return "We can remove bulky items **from $80 per item** on the same day as your move.";
+        if (has('book', 'available', 'tomorrow', 'today', 'urgent', 'date', 'when'))
+            return "We recommend booking 1–2 weeks ahead for weekends, but same-day and next-day slots are often available. Let's check your date on WhatsApp.\n[[WHATSAPP]]";
+        if (has('price', 'cost', 'how much', 'rate', 'quote', 'cheap'))
+            return "Our base rates:\n- **10ft lorry**: $180 (room / studio)\n- **14ft lorry**: $280 (2–3 room)\n- **24ft lorry**: $480 (4–5 room)\n- **Landed**: from $780\n\nWhat's your home size?";
+        if (has('human', 'person', 'agent', 'call', 'whatsapp', 'talk'))
+            return "Sure! Tap the button below to chat with our coordinator on WhatsApp, or call **+65 8888 1234**.\n[[WHATSAPP]]";
+        return "I can help with prices, lorry sizes, dismantling, boxes and booking. Tell me your **home size** and **from/to areas** for a quick estimate, or tap below to chat with our team.\n[[WHATSAPP]]";
+    }
+
     /* ---------- Sending ---------- */
     async function send(text) {
         text = text.trim();
@@ -160,28 +202,34 @@
         setTyping(true);
 
         try {
-            const res = await fetch('/api/chat', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ messages: history })
-            });
-            const data = await res.json().catch(() => ({}));
-            if (!res.ok) throw new Error(data.error || 'Something went wrong.');
+            let replyText = '';
+            let isAi = false;
+            try {
+                const res = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ messages: history })
+                });
+                const data = await res.json().catch(() => ({}));
+                if (res.ok && data.reply) {
+                    replyText = data.reply;
+                    isAi = data.mode === 'ai';
+                } else {
+                    replyText = localOfflineReply(text);
+                }
+            } catch {
+                // Static host (e.g. GitHub Pages) where /api/chat does not exist
+                replyText = localOfflineReply(text);
+            }
 
-            // small natural delay so instant offline replies don't feel robotic
-            await new Promise(r => setTimeout(r, data.mode === 'ai' ? 0 : 500));
+            await new Promise(r => setTimeout(r, isAi ? 0 : 450));
             setTyping(false);
-            history.push({ role: 'assistant', text: data.reply });
+            history.push({ role: 'assistant', text: replyText });
             save();
-            addBubble('assistant', data.reply);
+            addBubble('assistant', replyText);
         } catch (err) {
             setTyping(false);
-            history.pop(); save(); // let the user retry the same message
-            const offline = err instanceof TypeError; // network / no server
-            addError(offline
-                ? "I can't connect right now. Please message us on WhatsApp at +65 8888 1234."
-                : err.message);
-            input.value = text; autoGrow();
+            addError("Please message us on WhatsApp at +65 8888 1234.");
         } finally {
             busy = false; sendBtn.disabled = false;
             if (window.matchMedia('(min-width: 641px)').matches) input.focus();
