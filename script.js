@@ -1,8 +1,8 @@
-/* Singapore Cheap Movers — interactions */
+/* Dheeran Movers & Storage — interactions */
 document.documentElement.classList.add('js');
 
-// Change this to your real WhatsApp Business number (country code, no + or spaces)
-const WHATSAPP_NUMBER = '6588881234';
+// Official WhatsApp Business number (country code, no + or spaces)
+const WHATSAPP_NUMBER = '6584076882';
 
 document.addEventListener('DOMContentLoaded', () => {
     const $ = (s, el = document) => el.querySelector(s);
@@ -173,7 +173,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }).catch(() => {});
 
         const msg = [
-            'Hi Singapore Cheap Movers, I would like a moving quote.',
+            'Hi Dheeran Movers & Storage, I would like a moving quote.',
             '',
             `*Name:* ${leadPayload.name}`,
             `*Mobile:* ${leadPayload.phone}`,

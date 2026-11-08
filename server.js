@@ -32,7 +32,7 @@ const GEMINI_MODEL = (process.env.GEMINI_MODEL || 'gemini-flash-latest').trim();
 
 // WhatsApp Integration Config
 const WA_VERIFY_TOKEN = (process.env.WA_VERIFY_TOKEN || 'scm_verify_token').trim();
-const WA_ADMIN_PHONE = (process.env.WA_ADMIN_PHONE || '6588881234').replace(/\D/g, '');
+const WA_ADMIN_PHONE = (process.env.WA_ADMIN_PHONE || '6584076882').replace(/\D/g, '');
 // Option A: Local WhatsApp Bot HTTP Endpoint (e.g. http://localhost:3001/send or WAHA / Baileys / whatsapp-web.js)
 const WA_LOCAL_SEND_URL = (process.env.WA_LOCAL_SEND_URL || '').trim();
 const WA_LOCAL_API_KEY = (process.env.WA_LOCAL_API_KEY || '').trim();
@@ -44,51 +44,45 @@ const PUBLIC_DIR = __dirname;
 
 /* ---------- Shared Business Knowledge for Both Website & WhatsApp Bot ---------- */
 const SYSTEM_PROMPT = `
-You are "Mei", the friendly online moving assistant for Singapore Cheap Movers, a professional and affordable house & office moving company in Singapore.
-You answer customers on BOTH our website chat and our WhatsApp Business number.
+You are the friendly online moving assistant for Dheeran Movers & Storage, a professional and affordable house & office moving and storage company in Singapore.
+You answer customers on BOTH our website chat and our WhatsApp Business number (+65 8407 6882).
 
 GOALS
-1. Answer questions about moving in Singapore clearly and briefly.
+1. Answer questions about moving and storage in Singapore clearly and briefly.
 2. Help the customer estimate a price using ONLY the rates below.
-3. Collect move details (home size, from area, to area, date, special items) so our coordinator can lock in a fixed quote.
+3. Collect move details (truck/home size, from area, to area, date, special items) so our coordinator can lock in a fixed quote.
 
 STYLE
 - Warm, professional, concise. Use short paragraphs or short bullet lists. Max ~110 words per reply unless the user asks for detail.
-- Use simple English that suits Singapore customers. Prices are in SGD, written like $280.
+- Use simple English that suits Singapore customers. Prices are in SGD, written like $350.
 - Ask at most 1–2 questions at a time.
 - Use *bold* or **bold** sparingly for prices or key points.
 
-BASE RATES (include lorry, driver, movers, fuel, stretch-film wrapping, lift-landing moves)
-- 10ft covered lorry, driver + 2 movers: $180 per trip (room / studio / small move, ~15 boxes + bed + desk)
-- 14ft tailgate lorry, driver + 3 movers: $280 per trip (2–3 room HDB or 1–2 bedroom condo, ~25 boxes)
-- 24ft jumbo lorry, driver + 4 movers: $480 per trip (4–5 room HDB or 3-bed condo in one trip, ~50 boxes)
-- Landed property, 2–3 lorries, 6 movers + supervisor: from $780
-- Office / shop relocation: from $380
+BASE PACKAGES (ALL packages include protective furniture wrapping, 30 FREE carton boxes on a return-collection basis, and FREE basic dismantling & assembly of basic TV wall mounts, sofa legs, basic dining tables & standard beds)
+- 1x 10ft covered truck with 1 driver + 1 helper: $200 per trip (ideal for room, studio or small move)
+- 1x 14ft covered truck with 2 helpers: $350 per trip (ideal for 2–3 room HDB, Condo or light 4-room move)
+- 2x 14ft covered trucks with 2 helpers: $700 (ideal for full 4–5 room HDB or landed move)
+- Office / commercial relocation: from $350
 
-ADD-ONS (charged only if needed)
-- Standard bed dismantle & reassemble: $30–$50 each
-- Storage / hydraulic / bunk bed: $60–$80 each
-- Dining table dismantle & reassemble: $30–$50 each
-- Wardrobe dismantle & reassemble: $80–$150 each
-- 20 heavy-duty boxes + tape: $45 per bundle
-- Stairs with no lift: $30 per floor per load
-- Upright piano / safe: from $150
-- Bulky item disposal: from $80 per item
-Dismantling and assembly are NOT free. Boxes are NOT free.
+INCLUDED FREE IN EVERY MOVE
+- Protective stretch-film furniture wrapping
+- 30 free carton boxes (return collection: we collect the empty boxes back for free after you unpack)
+- Basic dismantling & assembly: basic TV wall-mount brackets, sofa legs, basic dining tables & standard beds
+
+SPECIAL ITEM ADD-ONS ($25–$40 per item)
+- Storage / hydraulic bed dismantle & assemble: $25–$40
+- Fridge door dismantle & reinstall: $25–$40
+- IKEA / sliding wardrobe dismantle & assemble: $25–$40
+- Stairs with no lift: $30 per floor
 
 OTHER FACTS
-- Islandwide, no distance surcharge within Singapore. Operating daily 7am–11pm.
-- Goods-in-transit insurance included. Condo MCST documents (vehicle numbers, crew details, insurance cert) sent after booking.
-- Book 1–2 weeks ahead for weekends/month-end; same-day/next-day possible if lorries are free.
-- No deposit needed to check availability. Final price is confirmed on WhatsApp before booking.
-- Phone / WhatsApp: +65 8888 1234.
+- Islandwide Singapore, operating daily 7am–11pm.
+- Safe short-term and long-term furniture storage available.
+- Phone / WhatsApp: +65 8407 6882.
 
 RULES
-- Never invent prices, discounts, promotions or services not listed. If unsure, say the team will confirm.
-- Always present estimates as "from $X" / "estimated", never as guaranteed.
-- When you give an estimate, show a short breakdown (base + add-ons = total).
-- Do not discuss or compare other moving companies.
-- When you have at least the home size and the from/to areas (or the customer wants to book or talk to a person), end your reply with the exact token [[WHATSAPP]] on its own line. Do not mention the token.
+- Never invent prices or promotions not listed.
+- When you have at least the truck/home size and the from/to areas (or the customer wants to book or talk to a person), end your reply with the exact token [[WHATSAPP]] on its own line. Do not mention the token.
 `.trim();
 
 /* ---------- Offline Fallback Brain (works without API key on both Web & WhatsApp) ---------- */
@@ -97,40 +91,24 @@ function offlineReply(text) {
     const has = (...w) => w.some(x => t.includes(x));
 
     if (/^(hi|hello|hey|good (morning|afternoon|evening))\b/.test(t.trim()) && t.length < 25)
-        return "Hi! I'm Mei, your moving assistant. Tell me your **home size** and where you're moving **from and to**, and I'll estimate your price.";
+        return "Hi! Welcome to **Dheeran Movers & Storage**. Tell me your **home size** and where you're moving **from and to**, and I'll calculate your price!";
+    if (has('box', 'carton', '30'))
+        return "Every move includes **30 FREE carton boxes** (on a return-collection basis). Once you unpack at your new place, just message us at **8407 6882** and we'll collect the empty boxes back!\n[[WHATSAPP]]";
+    if (has('storage bed', 'fridge', 'ikea', 'wardrobe', 'add on', 'addon', '25', '40'))
+        return "Special item add-on rates are just **$25 – $40 per item**:\n- Storage / hydraulic bed dismantle & assemble: **$25–$40**\n- Fridge door remove & reinstall: **$25–$40**\n- IKEA / sliding wardrobe dismantle & assemble: **$25–$40**\n\n(Basic TV wall mount, sofa legs, basic dining table & standard bed are **FREE**!)";
+    if (has('dismantl', 'assembl', 'free', 'tv', 'sofa', 'table', 'dining'))
+        return "**Included FREE in your package:**\n- Basic TV wall-mount dismantle\n- Sofa legs dismantle & assemble\n- Basic dining table dismantle & assemble\n- Standard bedframe dismantle & assemble\n\n**Add-ons ($25–$40 each):**\n- Storage bed, Fridge door, or IKEA wardrobe.\n[[WHATSAPP]]";
+    if (has('10ft', '10 footer', '200', 'room', 'studio', 'small'))
+        return "Our **1× 10ft Truck with 1 Driver + 1 Helper is $200**.\n\nIncludes:\n- Protective furniture wrapping\n- 30 free carton boxes (return collection)\n- Basic dismantle & assembly (TV mount, sofa legs, basic dining table)\n[[WHATSAPP]]";
+    if (has('14ft', '14 footer', '350', '2 room', '3 room', '4 room', '5 room', 'hdb', 'condo'))
+        return "Our **1× 14ft Truck with 2 Helpers is $350** per load (or $700 for 2 loads for large 4–5 room homes).\n\nIncludes:\n- Full protective wrapping\n- 30 free boxes (return collection)\n- Basic dismantle & assembly (TV wall mount, sofa legs, basic dining table)\n- Special items (storage bed, fridge door, IKEA wardrobe) are just $25–$40.\n[[WHATSAPP]]";
+    if (has('storage', 'store', 'warehouse'))
+        return "Yes! **Dheeran Movers & Storage** provides clean, secure short-term and long-term furniture storage. Send us your item list on WhatsApp at **8407 6882** for an instant storage quote.\n[[WHATSAPP]]";
     if (has('mcst', 'permit'))
-        return "Yes. After you book, we send our vehicle numbers, crew details and insurance certificate for your condo's MCST move-in/out form.";
-    if (has('insur', 'damage', 'scratch'))
-        return "Every move includes goods-in-transit insurance. Check items when we unload and tell the crew leader about any issue before they leave.";
-    if (has('dismantl', 'assembl', 'wardrobe', 'carpent'))
-        return "Dismantling is charged per item so you only pay for what you need:\n- Standard bed: $30–$50\n- Storage / bunk bed: $60–$80\n- Dining table: $30–$50\n- Wardrobe: $80–$150";
-    if (has('4 room', '4-room', '5 room', '5-room', '4rm', '5rm', 'executive', '3 bed', '3-bed'))
-        return "For a **4–5 room HDB or 3-bed condo**, most families use our **24ft jumbo lorry with 4 movers: from $480**.\n\nCommon add-ons:\n- Bed dismantle: $30–$50 each\n- Wardrobe dismantle: $80–$150 each\n- 20 boxes: $45\n\nWhere are you moving from and to?\n[[WHATSAPP]]";
-    if (has('2 room', '2-room', '3 room', '3-room', '1 bed', '2 bed', 'condo'))
-        return "For a **2–3 room HDB or 1–2 bed condo**, our **14ft tailgate lorry with 3 movers is from $280**. That includes wrapping and lift-landing moving.\n\nDo you need any beds or wardrobes dismantled?\n[[WHATSAPP]]";
-    if (has('room', 'studio', 'small', 'few items', 'single'))
-        return "For a room or studio, our **10ft lorry with 2 movers is from $180** per trip. Roughly 15 boxes plus a bed and desk fit in.\n\nWhen are you planning to move?";
-    if (has('landed', 'terrace', 'semi-d', 'bungalow'))
-        return "Landed moves start **from $780** with 2–3 lorries, 6 movers and a site supervisor, including floor and staircase protection.\n\nShall I connect you to our coordinator to confirm?\n[[WHATSAPP]]";
-    if (has('office', 'shop', 'commercial'))
-        return "Office and shop relocations start **from $380**. We can move after hours or on weekends to avoid downtime.\n\nHow many workstations do you have?\n[[WHATSAPP]]";
-    if (has('bed', 'table'))
-        return "Dismantling is charged per item so you only pay for what you need:\n- Standard bed: $30–$50\n- Storage / bunk bed: $60–$80\n- Dining table: $30–$50\n- Wardrobe: $80–$150";
-    if (has('box', 'carton'))
-        return "A bundle of **20 heavy-duty boxes + tape is $45**. We can deliver them before moving day.";
-    if (has('stair', 'no lift', 'walk up'))
-        return "If there's no lift landing, stairs are **$30 per floor per load**.";
-    if (has('piano', 'safe'))
-        return "Upright pianos and safes start **from $150**, depending on access.";
-    if (has('dispos', 'throw', 'old sofa', 'mattress'))
-        return "We can remove bulky items **from $80 per item** on the same day as your move.";
-    if (has('book', 'available', 'tomorrow', 'today', 'urgent', 'date', 'when'))
-        return "We recommend booking 1–2 weeks ahead for weekends, but same-day and next-day slots are often available. Let's check your date on WhatsApp.\n[[WHATSAPP]]";
-    if (has('price', 'cost', 'how much', 'rate', 'quote', 'cheap'))
-        return "Our base rates:\n- **10ft lorry**: $180 (room / studio)\n- **14ft lorry**: $280 (2–3 room)\n- **24ft lorry**: $480 (4–5 room)\n- **Landed**: from $780\n\nWhat's your home size?";
-    if (has('human', 'person', 'agent', 'call', 'whatsapp', 'talk'))
-        return "Sure! Our coordinator can assist you directly at **+65 8888 1234**.\n[[WHATSAPP]]";
-    return "I can help with prices, lorry sizes, dismantling, boxes and booking. Tell me your **home size** and **from/to areas** for a quick estimate.\n[[WHATSAPP]]";
+        return "Yes, we provide vehicle numbers and mover details right after booking for your condo MCST permit application.";
+    if (has('price', 'cost', 'how much', 'rate', 'quote', 'truck', 'lorry'))
+        return "Here are **Dheeran Movers & Storage** package rates:\n- **1× 10ft Truck (1 Driver + 1 Helper):** $200\n- **1× 14ft Truck (with 2 Helpers):** $350\n\nBoth include **wrapping, 30 free boxes (return collection)**, and **basic dismantle/assembly** (TV wall mount, sofa legs, basic dining table). Storage bed, fridge door & IKEA wardrobe are **$25–$40**.\n[[WHATSAPP]]";
+    return "You can book our **10ft Truck ($200)** or **14ft Truck with 2 Helpers ($350)** — both include wrapping, 30 free boxes (return collection) & basic dismantling/assembly. WhatsApp us at **8407 6882**!\n[[WHATSAPP]]";
 }
 
 /* ---------- Gemini Call ---------- */
@@ -349,7 +327,7 @@ const server = http.createServer(async (req, res) => {
         const notes = String(data.notes || '').trim().slice(0, 300);
 
         const customerMsg = [
-            `Hi *${name}*! 👋 This is *Mei* from *Singapore Cheap Movers*.`,
+            `Hi *${name}*! 👋 Thank you for contacting *Dheeran Movers & Storage*.`,
             `We received your moving quote request from our website:`,
             ``,
             `📍 *Route:* ${from} → ${to}`,
@@ -520,7 +498,7 @@ const server = http.createServer(async (req, res) => {
 });
 
 server.listen(PORT, () => {
-    console.log(`\n  Singapore Cheap Movers running at  http://localhost:${PORT}`);
+    console.log(`\n  Dheeran Movers & Storage running at  http://localhost:${PORT}`);
     console.log(GEMINI_API_KEY
         ? `  Brain:          Google Gemini AI (${GEMINI_MODEL})`
         : `  Brain:          Built-in Smart Rules (add GEMINI_API_KEY in .env for live Gemini AI)`);

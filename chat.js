@@ -1,8 +1,8 @@
-/* Singapore Cheap Movers — AI chat assistant (frontend) */
+/* Dheeran Movers & Storage — AI chat assistant (frontend) */
 (() => {
-    const WA_NUMBER = '6588881234'; // keep in sync with script.js
-    const STORE_KEY = 'scm-chat-v1';
-    const GREETING = "Hi, I'm **Mei** 👋 I can estimate your moving price, explain our lorry sizes and add-ons, or check a date for you.\n\nWhat are you moving, and where from/to?";
+    const WA_NUMBER = '6584076882'; // Dheeran Movers & Storage WhatsApp
+    const STORE_KEY = 'dheeran-chat-v1';
+    const GREETING = "Hi! Welcome to **Dheeran Movers & Storage** 👋\n\n• **10ft Truck (1 Driver + 1 Helper):** $200\n• **14ft Truck (with 2 Helpers):** $350\n• **Included FREE:** Wrapping, 30 carton boxes (return collection), basic TV wall mount, sofa legs & basic dining table dismantle/assemble.\n• **Add-ons ($25–$40):** Storage bed, fridge door, IKEA wardrobe.\n\nHow can I help with your move today?";
 
     const $ = s => document.querySelector(s);
     const launcher = $('#chat-launcher');
@@ -32,7 +32,6 @@
             const isList = lines.every(l => /^\s*([-*•]|\d+\.)\s+/.test(l));
             const inline = s => s.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
             if (isList) return '<ul>' + lines.map(l => `<li>${inline(l.replace(/^\s*([-*•]|\d+\.)\s+/, ''))}</li>`).join('') + '</ul>';
-            // mixed block: paragraph lines + list lines
             let html = '', inList = false;
             for (const l of lines) {
                 if (/^\s*[-*•]\s+/.test(l)) {
@@ -50,7 +49,7 @@
     /* ---------- WhatsApp hand-off with conversation summary ---------- */
     function waLink() {
         const userLines = history.filter(m => m.role === 'user').slice(-6).map(m => `• ${m.text}`);
-        const msg = ['Hi Singapore Cheap Movers, I was chatting with Mei on your website.', '', 'My details:', ...userLines, '', 'Please confirm the price and availability. Thank you!'].join('\n');
+        const msg = ['Hi Dheeran Movers & Storage, I was chatting on your website.', '', 'My details:', ...userLines, '', 'Please confirm the price and availability. Thank you!'].join('\n');
         return `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`;
     }
 
@@ -71,7 +70,7 @@
             a.target = '_blank'; a.rel = 'noopener';
             a.href = waLink();
             a.addEventListener('click', () => { a.href = waLink(); });
-            a.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2z"/></svg> Confirm on WhatsApp';
+            a.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2z"/></svg> WhatsApp 8407 6882';
             body.appendChild(a);
         }
         scrollDown();
@@ -90,7 +89,7 @@
         if (on && !typingEl) {
             typingEl = document.createElement('div');
             typingEl.className = 'typing';
-            typingEl.setAttribute('aria-label', 'Mei is typing');
+            typingEl.setAttribute('aria-label', 'Assistant is typing');
             typingEl.innerHTML = '<i></i><i></i><i></i>';
             body.appendChild(typingEl);
             scrollDown();
@@ -116,7 +115,7 @@
         document.body.classList.add('chat-open');
         badge.hidden = true;
         teaser.hidden = true;
-        sessionStorage.setItem('scm-chat-seen', '1');
+        sessionStorage.setItem('dheeran-chat-seen', '1');
         if (!body.childElementCount) renderAll();
         scrollDown();
         if (window.matchMedia('(min-width: 641px)').matches) setTimeout(() => input.focus(), 50);
@@ -135,14 +134,13 @@
         history = []; save(); renderAll(); input.focus();
     });
 
-    // Teaser bubble after a few seconds (once per session)
-    if (!sessionStorage.getItem('scm-chat-seen')) {
+    if (!sessionStorage.getItem('dheeran-chat-seen')) {
         setTimeout(() => { if (panel.hidden) teaser.hidden = false; }, 6000);
     } else {
         badge.hidden = true;
     }
     teaser.addEventListener('click', e => {
-        if (e.target.id === 'chat-teaser-close') { teaser.hidden = true; sessionStorage.setItem('scm-chat-seen', '1'); return; }
+        if (e.target.id === 'chat-teaser-close') { teaser.hidden = true; sessionStorage.setItem('dheeran-chat-seen', '1'); return; }
         openChat();
     });
 
@@ -152,40 +150,24 @@
         const has = (...w) => w.some(x => t.includes(x));
 
         if (/^(hi|hello|hey|good (morning|afternoon|evening))\b/.test(t.trim()) && t.length < 25)
-            return "Hi! I'm Mei, your moving assistant. Tell me your **home size** and where you're moving **from and to**, and I'll estimate your price.";
+            return "Hi! Welcome to **Dheeran Movers & Storage**. Tell me your **home size** and where you're moving **from and to**, and I'll calculate your price!";
+        if (has('box', 'carton', '30'))
+            return "Every move includes **30 FREE carton boxes** (on a return-collection basis). Once you unpack at your new place, just message us at **8407 6882** and we'll collect the empty boxes back!\n[[WHATSAPP]]";
+        if (has('storage bed', 'fridge', 'ikea', 'wardrobe', 'add on', 'addon', '25', '40'))
+            return "Special item add-on rates are just **$25 – $40 per item**:\n- Storage / hydraulic bed dismantle & assemble: **$25–$40**\n- Fridge door remove & reinstall: **$25–$40**\n- IKEA / sliding wardrobe dismantle & assemble: **$25–$40**\n\n(Basic TV wall mount, sofa legs, basic dining table & standard bed are **FREE**!)";
+        if (has('dismantl', 'assembl', 'free', 'tv', 'sofa', 'table', 'dining'))
+            return "**Included FREE in your package:**\n- Basic TV wall-mount dismantle\n- Sofa legs dismantle & assemble\n- Basic dining table dismantle & assemble\n- Standard bedframe dismantle & assemble\n\n**Add-ons ($25–$40 each):**\n- Storage bed, Fridge door, or IKEA wardrobe.\n[[WHATSAPP]]";
+        if (has('10ft', '10 footer', '200', 'room', 'studio', 'small'))
+            return "Our **1× 10ft Truck with 1 Driver + 1 Helper is $200**.\n\nIncludes:\n- Protective furniture wrapping\n- 30 free carton boxes (return collection)\n- Basic dismantle & assembly (TV mount, sofa legs, basic dining table)\n[[WHATSAPP]]";
+        if (has('14ft', '14 footer', '350', '2 room', '3 room', '4 room', '5 room', 'hdb', 'condo'))
+            return "Our **1× 14ft Truck with 2 Helpers is $350** per load (or $700 for 2 loads for large 4–5 room homes).\n\nIncludes:\n- Full protective wrapping\n- 30 free boxes (return collection)\n- Basic dismantle & assembly (TV wall mount, sofa legs, basic dining table)\n- Special items (storage bed, fridge door, IKEA wardrobe) are just $25–$40.\n[[WHATSAPP]]";
+        if (has('storage', 'store', 'warehouse'))
+            return "Yes! **Dheeran Movers & Storage** provides clean, secure short-term and long-term furniture storage. Send us your item list on WhatsApp at **8407 6882** for an instant storage quote.\n[[WHATSAPP]]";
         if (has('mcst', 'permit'))
-            return "Yes. After you book, we send our vehicle numbers, crew details and insurance certificate for your condo's MCST move-in/out form.";
-        if (has('insur', 'damage', 'scratch'))
-            return "Every move includes goods-in-transit insurance. Check items when we unload and tell the crew leader about any issue before they leave.";
-        if (has('dismantl', 'assembl', 'wardrobe', 'carpent'))
-            return "Dismantling is charged per item so you only pay for what you need:\n- Standard bed: $30–$50\n- Storage / bunk bed: $60–$80\n- Dining table: $30–$50\n- Wardrobe: $80–$150";
-        if (has('4 room', '4-room', '5 room', '5-room', '4rm', '5rm', 'executive', '3 bed', '3-bed'))
-            return "For a **4–5 room HDB or 3-bed condo**, most families use our **24ft jumbo lorry with 4 movers: from $480**.\n\nCommon add-ons:\n- Bed dismantle: $30–$50 each\n- Wardrobe dismantle: $80–$150 each\n- 20 boxes: $45\n\nWhere are you moving from and to?\n[[WHATSAPP]]";
-        if (has('2 room', '2-room', '3 room', '3-room', '1 bed', '2 bed', 'condo'))
-            return "For a **2–3 room HDB or 1–2 bed condo**, our **14ft tailgate lorry with 3 movers is from $280**. That includes wrapping and lift-landing moving.\n\nDo you need any beds or wardrobes dismantled?\n[[WHATSAPP]]";
-        if (has('room', 'studio', 'small', 'few items', 'single'))
-            return "For a room or studio, our **10ft lorry with 2 movers is from $180** per trip. Roughly 15 boxes plus a bed and desk fit in.\n\nWhen are you planning to move?";
-        if (has('landed', 'terrace', 'semi-d', 'bungalow'))
-            return "Landed moves start **from $780** with 2–3 lorries, 6 movers and a site supervisor, including floor and staircase protection.\n\nShall I connect you to our coordinator to confirm?\n[[WHATSAPP]]";
-        if (has('office', 'shop', 'commercial'))
-            return "Office and shop relocations start **from $380**. We can move after hours or on weekends to avoid downtime.\n\nHow many workstations do you have?\n[[WHATSAPP]]";
-        if (has('bed', 'table'))
-            return "Dismantling is charged per item so you only pay for what you need:\n- Standard bed: $30–$50\n- Storage / bunk bed: $60–$80\n- Dining table: $30–$50\n- Wardrobe: $80–$150";
-        if (has('box', 'carton'))
-            return "A bundle of **20 heavy-duty boxes + tape is $45**. We can deliver them before moving day.";
-        if (has('stair', 'no lift', 'walk up'))
-            return "If there's no lift landing, stairs are **$30 per floor per load**.";
-        if (has('piano', 'safe'))
-            return "Upright pianos and safes start **from $150**, depending on access.";
-        if (has('dispos', 'throw', 'old sofa', 'mattress'))
-            return "We can remove bulky items **from $80 per item** on the same day as your move.";
-        if (has('book', 'available', 'tomorrow', 'today', 'urgent', 'date', 'when'))
-            return "We recommend booking 1–2 weeks ahead for weekends, but same-day and next-day slots are often available. Let's check your date on WhatsApp.\n[[WHATSAPP]]";
-        if (has('price', 'cost', 'how much', 'rate', 'quote', 'cheap'))
-            return "Our base rates:\n- **10ft lorry**: $180 (room / studio)\n- **14ft lorry**: $280 (2–3 room)\n- **24ft lorry**: $480 (4–5 room)\n- **Landed**: from $780\n\nWhat's your home size?";
-        if (has('human', 'person', 'agent', 'call', 'whatsapp', 'talk'))
-            return "Sure! Tap the button below to chat with our coordinator on WhatsApp, or call **+65 8888 1234**.\n[[WHATSAPP]]";
-        return "I can help with prices, lorry sizes, dismantling, boxes and booking. Tell me your **home size** and **from/to areas** for a quick estimate, or tap below to chat with our team.\n[[WHATSAPP]]";
+            return "Yes, we provide vehicle numbers and mover details right after booking for your condo MCST permit application.";
+        if (has('price', 'cost', 'how much', 'rate', 'quote', 'truck', 'lorry'))
+            return "Here are **Dheeran Movers & Storage** package rates:\n- **1× 10ft Truck (1 Driver + 1 Helper):** $200\n- **1× 14ft Truck (with 2 Helpers):** $350\n\nBoth include **wrapping, 30 free boxes (return collection)**, and **basic dismantle/assembly** (TV wall mount, sofa legs, basic dining table). Storage bed, fridge door & IKEA wardrobe are **$25–$40**.\n[[WHATSAPP]]";
+        return "You can book our **10ft Truck ($200)** or **14ft Truck with 2 Helpers ($350)** — both include wrapping, 30 free boxes (return collection) & basic dismantling/assembly. Tap below to WhatsApp us at **8407 6882**!\n[[WHATSAPP]]";
     }
 
     /* ---------- Sending ---------- */
@@ -218,7 +200,6 @@
                     replyText = localOfflineReply(text);
                 }
             } catch {
-                // Static host (e.g. GitHub Pages) where /api/chat does not exist
                 replyText = localOfflineReply(text);
             }
 
@@ -229,7 +210,7 @@
             addBubble('assistant', replyText);
         } catch (err) {
             setTyping(false);
-            addError("Please message us on WhatsApp at +65 8888 1234.");
+            addError("Please message us on WhatsApp at +65 8407 6882.");
         } finally {
             busy = false; sendBtn.disabled = false;
             if (window.matchMedia('(min-width: 641px)').matches) input.focus();

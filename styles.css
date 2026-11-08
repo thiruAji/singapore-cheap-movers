@@ -225,7 +225,7 @@ em { font-style: italic; }
 .calc-step legend + * { clear: both; }
 .step-no { width: 30px; height: 30px; border-radius: 50%; background: var(--green-900); color: #fff; display: grid; place-items: center; font-size: .86rem; }
 
-.type-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+.type-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
 .type-tile { position: relative; display: flex; flex-direction: column; gap: 2px; padding: 16px 14px; border: 1.5px solid var(--line); border-radius: var(--r-md); cursor: pointer; transition: border-color .15s, background .15s, box-shadow .15s; }
 .type-tile:hover { border-color: #C9CFCB; }
 .type-tile input { position: absolute; opacity: 0; pointer-events: none; }
