@@ -33,20 +33,49 @@
       "@context": "https://schema.org",
       "@graph": [
         {
-          "@type": "MovingCompany",
+          "@type": ["MovingCompany", "SelfStorage"],
           "@id": "https://thiruaji.github.io/singapore-cheap-movers/#business",
           "name": "Dheeran Movers & Storage",
           "alternateName": "Singapore Cheap Movers - Dheeran Movers & Storage",
+          "description": "Affordable Singapore house moving, HDB & Condo relocation, office moving, and furniture storage. 10ft truck with 1 driver + 1 helper ($200) and 14ft truck with 2 helpers ($350). Includes protective wrapping, 30 free carton boxes (return collection), and basic dismantling/assembly.",
           "url": "https://thiruaji.github.io/singapore-cheap-movers/",
           "image": "https://thiruaji.github.io/singapore-cheap-movers/assets/hero-movers.jpg",
           "telephone": "+6584076882",
           "priceRange": "S$200 - S$700",
+          "currenciesAccepted": "SGD",
+          "paymentAccepted": "PayNow, Bank Transfer, Cash",
           "address": {
             "@type": "PostalAddress",
             "addressLocality": "Singapore",
+            "addressRegion": "SG",
             "addressCountry": "SG"
           },
-          "areaServed": { "@type": "Country", "name": "Singapore" },
+          "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": 1.3521,
+            "longitude": 103.8198
+          },
+          "contactPoint": {
+            "@type": "ContactPoint",
+            "telephone": "+65-8407-6882",
+            "contactType": "customer service",
+            "areaServed": "SG",
+            "availableLanguage": ["English", "Tamil", "Malay", "Chinese"]
+          },
+          "areaServed": [
+            { "@type": "Country", "name": "Singapore" },
+            { "@type": "Place", "name": "Tampines" },
+            { "@type": "Place", "name": "Bedok" },
+            { "@type": "Place", "name": "Sengkang" },
+            { "@type": "Place", "name": "Punggol" },
+            { "@type": "Place", "name": "Woodlands" },
+            { "@type": "Place", "name": "Yishun" },
+            { "@type": "Place", "name": "Jurong" },
+            { "@type": "Place", "name": "Tengah" },
+            { "@type": "Place", "name": "Ang Mo Kio" },
+            { "@type": "Place", "name": "Bishan" },
+            { "@type": "Place", "name": "Toa Payoh" }
+          ],
           "openingHoursSpecification": {
             "@type": "OpeningHoursSpecification",
             "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],
@@ -56,7 +85,8 @@
           "makesOffer": [
             { "@type": "Offer", "price": "200", "priceCurrency": "SGD", "itemOffered": { "@type": "Service", "name": "1x 10ft Truck with 1 Driver + 1 Helper (Includes wrapping, 30 free boxes return collection & basic dismantling/assembly)" } },
             { "@type": "Offer", "price": "350", "priceCurrency": "SGD", "itemOffered": { "@type": "Service", "name": "1x 14ft Truck with 2 Helpers (Includes wrapping, 30 free boxes return collection & basic dismantling/assembly)" } },
-            { "@type": "Offer", "price": "700", "priceCurrency": "SGD", "itemOffered": { "@type": "Service", "name": "2x 14ft Trucks Full Family Move (4-5 Room HDB / Landed)" } }
+            { "@type": "Offer", "price": "700", "priceCurrency": "SGD", "itemOffered": { "@type": "Service", "name": "2x 14ft Trucks Full Family Move (4-5 Room HDB / Landed)" } },
+            { "@type": "Offer", "price": "25", "priceCurrency": "SGD", "itemOffered": { "@type": "Service", "name": "Special item add-on: Storage bed, Fridge door or IKEA wardrobe dismantle & assemble ($25-$40)" } }
           ]
         },
         {
@@ -65,7 +95,18 @@
             { "@type": "Question", "name": "What are Dheeran Movers & Storage lorry rates?", "acceptedAnswer": { "@type": "Answer", "text": "Our 10ft truck with 1 driver + 1 helper is $200 per load. Our 14ft truck with 2 helpers is $350 per load. Both packages include protective wrapping, 30 free carton boxes (with free return collection after you unpack), and basic dismantling/assembly." } },
             { "@type": "Question", "name": "What dismantling and assembly is included in the base price?", "acceptedAnswer": { "@type": "Answer", "text": "Basic dismantling and reassembly is included for standard bedframes, basic dining tables, sofa legs, and TV wall-mount brackets. Special items like storage beds, fridge doors, and IKEA/sliding wardrobes are a low add-on of $25–$40." } },
             { "@type": "Question", "name": "Are carton boxes really free?", "acceptedAnswer": { "@type": "Answer", "text": "Yes! We provide up to 30 carton boxes for free on a return-collection basis — once you finish unpacking at your new home, simply call or WhatsApp us at 8407 6882 and we will collect the empty boxes back." } },
-            { "@type": "Question", "name": "How much are add-ons for storage beds, fridge doors or IKEA wardrobes?", "acceptedAnswer": { "@type": "Answer", "text": "Special carpentry and appliance handling — including storage/hydraulic beds, removing & reinstalling fridge doors, and IKEA/sliding wardrobe dismantling & assembly — is $25 to $40 per item." } }
+            { "@type": "Question", "name": "How much are add-ons for storage beds, fridge doors or IKEA wardrobes?", "acceptedAnswer": { "@type": "Answer", "text": "Special carpentry and appliance handling — including storage/hydraulic beds, removing & reinstalling fridge doors, and IKEA/sliding wardrobe dismantling & assembly — is $25 to $40 per item." } },
+            { "@type": "Question", "name": "Does Dheeran Movers & Storage offer short-term and long-term furniture storage in Singapore?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Dheeran Movers & Storage provides safe, clean short-term and long-term furniture storage across Singapore with pickup, protective wrapping, and redelivery when your new home is ready." } }
+          ]
+        },
+        {
+          "@type": "HowTo",
+          "name": "How to Book a House Move in Singapore with Dheeran Movers & Storage",
+          "step": [
+            { "@type": "HowToStep", "position": 1, "name": "Get an Instant Quote", "text": "Use our online price calculator or WhatsApp photos/video of your items to +65 8407 6882." },
+            { "@type": "HowToStep", "position": 2, "name": "Receive 30 Free Carton Boxes", "text": "Confirm your moving date and receive up to 30 free carton boxes ahead of your move." },
+            { "@type": "HowToStep", "position": 3, "name": "Wrap, Dismantle & Move", "text": "Our crew wraps your furniture and dismantles basic items (TV wall mount, sofa legs, basic dining table) for free, plus any $25–$40 special items." },
+            { "@type": "HowToStep", "position": 4, "name": "Reassemble & Free Box Return Collection", "text": "We reassemble your furniture in your new home and collect the empty carton boxes back for free after you unpack." }
           ]
         }
       ]
